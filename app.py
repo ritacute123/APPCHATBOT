@@ -2,16 +2,16 @@ import streamlit as st
 import pandas as pd
 import os
 
-# Path to the CSV file
-DATA_PATH = "C:\\Users\\ktabi\\Downloads\\customer_orders.csv"  # Updated path
+# Path to the CSV file (Updated Path)
+DATA_PATH = "C:\\Users\\ktabi\\Downloads\\customer_orders.csv"
 
 # Load data
 @st.cache_data
 def load_data():
-    if os.path.exists(DATA_PATH):
+    try:
         data = pd.read_csv(DATA_PATH)
         return data
-    else:
+    except FileNotFoundError:
         st.error(f"File not found: {DATA_PATH}")
         return pd.DataFrame()
 
@@ -36,11 +36,12 @@ def chatbot(query):
             return f"No data found for customer '{customer_name}'."
 
     # Quantity of a specific product
-    elif "how many units" in query:
-        for product in data["Product"].unique():
-            if product.lower() in query:
-                quantity = data[data["Product"].str.lower() == product.lower()]["Quantity"].sum()
-                return f"The total quantity sold for {product} is {quantity} units."
+    elif "how many" in query:
+        product_list = data["Product"].str.lower().unique()
+        for product in product_list:
+            if product in query:
+                quantity = data[data["Product"].str.lower() == product]["Quantity"].sum()
+                return f"The total quantity sold for {product.title()} is {quantity} units."
         return "Product not found."
 
     # Orders from a specific country
