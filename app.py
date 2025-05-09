@@ -1,27 +1,21 @@
 import streamlit as st
 import pandas as pd
-import os
 
-# Define the CSV filename
-CSV_FILENAME = "CustomerOrders.csv"
-
-# Get the directory of the current script
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Construct the full path to the CSV file
-DATA_PATH = os.path.join(BASE_DIR, CSV_FILENAME)
+# File uploader
+st.title("Interactive Chatbot - Customer Orders")
+uploaded_file = st.file_uploader("Upload your CustomerOrders.csv file", type="csv")
 
 # Load data
 @st.cache_data
-def load_data():
+def load_data(file):
     try:
-        data = pd.read_csv(DATA_PATH)
+        data = pd.read_csv(file)
         return data
-    except FileNotFoundError:
-        st.error(f"File not found: {DATA_PATH}")
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
         return pd.DataFrame()
 
-data = load_data()
+data = load_data(uploaded_file)
 
 # Chatbot function
 def chatbot(query):
@@ -29,7 +23,7 @@ def chatbot(query):
 
     # Check if data is loaded
     if data.empty:
-        return "Data not found or failed to load."
+        return "Data not found or failed to load. Please upload the CSV file."
 
     # Total price for a specific customer
     if "total price" in query and "for" in query:
@@ -83,10 +77,7 @@ def chatbot(query):
     else:
         return "Query not recognized. Please try again."
 
-# Streamlit Web App
-st.title("Interactive Chatbot - Customer Orders")
-st.write("Ask the chatbot about the dataset!")
-
+# User Input Section
 query = st.text_input("Enter your query:")
 if st.button("Submit"):
     response = chatbot(query)
