@@ -2,8 +2,14 @@ import streamlit as st
 import pandas as pd
 import os
 
-# Path to the CSV file (Updated Path)
-DATA_PATH = "C:\\Users\\ktabi\\Downloads\\customer_orders.csv"
+# Define the CSV filename
+CSV_FILENAME = "CustomerOrders.csv"
+
+# Get the directory of the current script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the full path to the CSV file
+DATA_PATH = os.path.join(BASE_DIR, CSV_FILENAME)
 
 # Load data
 @st.cache_data
